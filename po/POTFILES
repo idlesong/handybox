@@ -1,0 +1,4 @@
+data/im.idlesong.handybox.desktop.in
+data/im.idlesong.handybox.appdata.xml.in
+data/im.idlesong.handybox.gschema.xml
+src/window.ui

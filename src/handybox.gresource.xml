@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/im/idlesong/handybox">
+    <file compressed="true" preprocess="xml-stripblanks">about_dialog.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="shortcuts.ui">shortcuts.ui</file>    
+    <file>window.ui</file>
+  </gresource>
+</gresources>
