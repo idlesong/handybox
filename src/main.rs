@@ -4,6 +4,8 @@ use gtk::prelude::*;
 
 mod config;
 mod window;
+mod youdao;
+mod wikipedia;
 use crate::window::Window;
 
 fn main() {
@@ -24,6 +26,8 @@ fn main() {
         window.widget.set_application(Some(app));
         app.add_window(&window.widget);
         window.widget.present();
+
+        window.connect_events();        
     });
 
     let ret = app.run(&std::env::args().collect::<Vec<_>>());
