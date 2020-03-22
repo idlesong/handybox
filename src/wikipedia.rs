@@ -60,13 +60,56 @@ impl Wikipedia {
 
         Ok(json)
     }
-    pub fn get(query: &str) -> Result<String, Box<std::error::Error>>{
-        println!("test request::get");
-        let resp = reqwest::get("https://ja.wikipedia.org/wiki/GNU")?.text()?;
+
+    pub fn get(query: &str) -> Result<Value, Box<std::error::Error>>{
+        println!("test request::post wikipedia");
+        // JSON.parse(request.response_body.data);
+        // let resp = reqwest::get("https://gtk-rs.org/docs-src/tutorial")?.text()?;
+        // https://en.wikipedia.org/w/api.php
+
+        let params = [
+                        ("action", "query"),
+                        ("format", "json"),
+                        ("list", "search"),
+                        ("srsearch", "GNU"),
+                        ];
+        // let params = [
+        //                 ("action", "query"),
+        //                 ("prop", "info|extracts|pageprops|images"),
+        //                 ("inprop", "url"),
+        //                 ("exlimit", "500"), //limit),
+        //                 ("explaintext", ""),
+        //                 ("exsectionformat", "plain"),
+        //                 ("exchars", "500"), //max_chars),
+        //                 ("exintro", ""),
+        //                 ("redirects", ""),
+        //                 ("imlimit", "500"),
+        //                 ("generator", "search"),
+        //                 ("gsrsearch", "term"),
+        //                 ("gsrnamespace", "0"),
+        //                 ("gsrprop", "score"),
+        //                 ("gsrinfo", "suggestion"),
+        //                 ("gsrlimit", "500") //limit),
+        //                 ];
+
+        // let resp = reqwest::get("https://httpbin.org/headers")?.text()?;
         // let resp = reqwest::get("http://httpbin.org/range/26")?.text()?;
+        // let body = reqwest::get("https://en.jinzhao.wiki/wiki/GNU")?.text()?.to_string();
+        let client = reqwest::Client::new();
+        let mut resp = client.post("https://en.jinzhao.wiki/w/api.php")
+            .form(&params)
+            .send()?;
+        // println!("resp = {:#?}", resp);
 
-	    println!("body = {:?}", resp);
+        let body = resp.text()?.to_string();
+        //println!("body = {:#?}", body);
 
-        Ok(resp)
+        println!("body = {:?}", body);
+
+
+        let json: Value =
+            serde_json::from_str(&body).expect("JSON was not well-formatted");
+
+        Ok(json)
     }
 }

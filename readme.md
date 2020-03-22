@@ -7,3 +7,8 @@ Collection of gnome search providers. So you don't need install many gnome searc
   - wordreference/youdao
   - technical cheat sheet
   - gnome documents
+
+
+### todo
+
+https://stackoverflow.com/questions/52238397/why-does-reqwest-require-an-openssl-installation

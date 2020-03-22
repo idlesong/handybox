@@ -26,6 +26,6 @@ features = ["gettext-system"]
 [dependencies]
 reqwest = "^0.9.15"
 rust-crypto = "^0.2"
-native-tls = "0.2"
+
 serde  = "^0"
 serde_json  = "^0"
