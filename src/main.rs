@@ -21,13 +21,13 @@ fn main() {
 
     let app = gtk::Application::new(Some("im.idlesong.handybox"), Default::default()).unwrap();
     app.connect_activate(move |app| {
-        let window = Window::new();
+        let window = Window::new(app);
 
         window.widget.set_application(Some(app));
         app.add_window(&window.widget);
         window.widget.present();
 
-        window.connect_events();        
+        window.connect_events();
     });
 
     let ret = app.run(&std::env::args().collect::<Vec<_>>());

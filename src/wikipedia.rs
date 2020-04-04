@@ -67,30 +67,31 @@ impl Wikipedia {
         // let resp = reqwest::get("https://gtk-rs.org/docs-src/tutorial")?.text()?;
         // https://en.wikipedia.org/w/api.php
 
-        let params = [
-                        ("action", "query"),
-                        ("format", "json"),
-                        ("list", "search"),
-                        ("srsearch", "GNU"),
-                        ];
         // let params = [
         //                 ("action", "query"),
-        //                 ("prop", "info|extracts|pageprops|images"),
-        //                 ("inprop", "url"),
-        //                 ("exlimit", "500"), //limit),
-        //                 ("explaintext", ""),
-        //                 ("exsectionformat", "plain"),
-        //                 ("exchars", "500"), //max_chars),
-        //                 ("exintro", ""),
-        //                 ("redirects", ""),
-        //                 ("imlimit", "500"),
-        //                 ("generator", "search"),
-        //                 ("gsrsearch", "term"),
-        //                 ("gsrnamespace", "0"),
-        //                 ("gsrprop", "score"),
-        //                 ("gsrinfo", "suggestion"),
-        //                 ("gsrlimit", "500") //limit),
+        //                 ("format", "json"),
+        //                 ("list", "search"),
+        //                 ("srsearch", "GNU"),
         //                 ];
+        let params = [
+                        ("action", "query"),
+                        ("prop", "info|extracts|pageprops|images"),
+                        ("format", "json"),
+                        ("inprop", "url"),
+                        // ("exlimit", "500"), //limit),
+                        ("explaintext", ""),
+                        ("exsectionformat", "plain"),
+                        ("exchars", "500"), //max_chars),
+                        ("exintro", ""),
+                        ("redirects", ""),
+                        // ("imlimit", "500"),
+                        ("generator", "search"),
+                        ("gsrsearch", "GNU"),
+                        ("gsrnamespace", "0"),
+                        // ("gsrprop", "score"),
+                        ("gsrinfo", "suggestion"),
+                        ("gsrlimit", "8") //limit),
+                        ];
 
         // let resp = reqwest::get("https://httpbin.org/headers")?.text()?;
         // let resp = reqwest::get("http://httpbin.org/range/26")?.text()?;
@@ -102,13 +103,12 @@ impl Wikipedia {
         // println!("resp = {:#?}", resp);
 
         let body = resp.text()?.to_string();
-        //println!("body = {:#?}", body);
-
-        println!("body = {:?}", body);
-
+        // println!("body = {:?}", body);
 
         let json: Value =
             serde_json::from_str(&body).expect("JSON was not well-formatted");
+
+        // println!("json = {:?}", json);
 
         Ok(json)
     }
