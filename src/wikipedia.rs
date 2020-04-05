@@ -62,17 +62,8 @@ impl Wikipedia {
     }
 
     pub fn get(query: &str) -> Result<Value, Box<std::error::Error>>{
-        println!("test request::post wikipedia");
-        // JSON.parse(request.response_body.data);
-        // let resp = reqwest::get("https://gtk-rs.org/docs-src/tutorial")?.text()?;
-        // https://en.wikipedia.org/w/api.php
+        println!("request::post wikipedia");
 
-        // let params = [
-        //                 ("action", "query"),
-        //                 ("format", "json"),
-        //                 ("list", "search"),
-        //                 ("srsearch", "GNU"),
-        //                 ];
         let params = [
                         ("action", "query"),
                         ("prop", "info|extracts|pageprops|images"),
@@ -86,10 +77,10 @@ impl Wikipedia {
                         ("redirects", ""),
                         // ("imlimit", "500"),
                         ("generator", "search"),
-                        ("gsrsearch", "GNU"),
+                        ("gsrsearch", query),
                         ("gsrnamespace", "0"),
                         // ("gsrprop", "score"),
-                        ("gsrinfo", "suggestion"),
+                        // ("gsrinfo", "suggestion"),
                         ("gsrlimit", "8") //limit),
                         ];
 
@@ -108,6 +99,18 @@ impl Wikipedia {
         let json: Value =
             serde_json::from_str(&body).expect("JSON was not well-formatted");
 
+        // let mut results = vec::new();
+        // if json["query"]["pages"].is_object(){
+        //     let pages = resp["query"]["pages"].as_object().unwrap();
+        //     for (key, value) in pages.iter() {
+        //         // println!("{}", value);
+        //         // println!("{}", value["extract"]);
+        //         // results.push(value["extract"].to_string());
+        //         let mut full_text = "".to_string();
+        //         full_text = full_text + value["title"] + "\n" + value["extract"] + value["fulurl"];
+        //         results.push(value["extract"].to_string());
+        //     }
+        // }
         // println!("json = {:?}", json);
 
         Ok(json)

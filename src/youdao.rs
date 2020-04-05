@@ -57,7 +57,7 @@ impl Youdao {
 
         let json: Value =
             serde_json::from_str(&body).expect("JSON was not well-formatted");
-        // println!("json = {:#?}", json);
+        println!("json = {:#?}", json);
 
         Ok(json)
     }

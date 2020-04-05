@@ -13,12 +13,7 @@ use webkit2gtk::{SettingsExt, WebContext, WebView, WebViewExt, WebViewExtManual}
 pub struct Window {
     pub widget: gtk::ApplicationWindow,
     pub entry: gtk::Entry,
-    pub label: gtk::Label,
-    pub label2: gtk::Label,
     pub results_list: ResultsList,
-    // pub browser: Browser,
-    // pub webview: WebView,
-    // pub content: String,
 }
 
 #[derive(Clone)]
@@ -52,37 +47,25 @@ impl Window {
         results_list.container.set_size_request(100, -1);
 
         let entry: gtk::Entry  = gtk::Entry::new();
-        let label: gtk::Label = gtk::Label::new_with_mnemonic(Some("Basic"));
-        let label2: gtk::Label = gtk::Label::new_with_mnemonic(Some("_Web"));
 
         let context = WebContext::get_default().unwrap();
         let webview: WebView = WebView::new_with_context(&context);
-        // webview.load_uri("https://crates.io/");
-        // webview.load_uri("https://en.jinzhao.wiki/wiki/GNU");
 
         let settings = WebViewExt::get_settings(&webview).unwrap();
         settings.set_enable_developer_extras(true);
 
         let vbox = gtk::Box::new(gtk::Orientation::Vertical, 4);
         vbox.add(&entry);
-        vbox.pack_start(&label, false, false, 10);
-        vbox.pack_start(&label2, false, false, 10);
         vbox.pack_start(&results_list.container, true, true, 0);
         // vbox.pack_start(&webview, true, true, 10);
         // widget.add(&webview);
         widget.add(&vbox);
         widget.show_all();
 
-        // let content: String = String::new();
         Self {
             widget,
-            // mybox,
             entry,
-            label,
-            label2,
             results_list,
-            // content,
-            // browser,
         }
     }
 
@@ -98,84 +81,68 @@ impl Window {
 
     fn input_changed(&mut self) {
     	let entry = self.entry.clone();
-    	let label = self.label.clone();
+    	// let label = self.label.clone();
     	//let mut content = self.content.clone();
 
         self.entry.connect_changed(move |_| {
             let sentence = entry.get_text().expect("get_text failed");
 	        //entry.get_text().expect("get_text failed").chars().collect();
-            label.set_text(&sentence);
+            // label.set_text(&sentence);
         });
     }
 
     fn input_complete(&self) {
-        let label = self.label.clone();
-    	let label2 = self.label2.clone();
     	let entry = self.entry.clone();
         let results_list = self.results_list.clone();
-        // let treestore = self.browser.treestore.clone();
-        // let liststore = self.browser.liststore.clone();
-    	//let content = self.content.clone();
     	// let webview = self.webview.clone();
 
         self.entry.connect_activate(move |_| {
                 // let body = reqwest::get("https://www.ruby-lang.org")?.text()?;
                 // println!("body = {:?}",body);
                 let content = entry.get_text().expect("get_text failed").to_string();
-                // let resp = Youdao::search(&content).ok().unwrap();
+                let resp_youdao = Youdao::search(&content).ok().unwrap();
                 let resp = Wikipedia::get(&content).ok().unwrap();
 
+                let mut results = Vec::new();
+
                 let mut basic = String::from("Basic explains: \n");
-                if resp["query"]["pages"].is_array(){
+                if resp_youdao["basic"]["explains"].is_array(){
                     // println!("basic dictionary = {:#?}", resp["basic"]["explains"].as_array());
-                    for x in resp["query"]["pages"].as_array().unwrap() {
+                    for x in resp_youdao["basic"]["explains"].as_array().unwrap() {
                         basic = basic + &x.to_string() + "\n";
                         // println!("x = {:#?}", x);
                     }
                 }
+                results.push(basic.to_string());
 
-                if resp["query"]["pages"].is_object(){
-                    // println!("basic dictionary = {:#?}", resp["basic"]["explains"].as_array());
-                    let pages = resp["query"]["pages"].as_object().unwrap();
-                    // basic = basic + &x.to_string() + "\n";
-                    // let pages_number = pages.len();
-
-                    // let mut results: [&str; pages_number = ["view"; pages_number];
-                    let mut results = Vec::new();
-                    for (key, value) in pages.iter() {
-                        // println!("{}", value);
-                        // println!("{}", value["extract"]);
-                        results.push(value["extract"].to_string());
+                let mut web_explains = String::from("Web explains: \n");
+                if resp_youdao["web"].is_array(){
+                    let explains = resp_youdao["web"].as_array().unwrap();
+                    for explain in explains {
+                        let mut explain_text = explain["key"].to_string();
+                        for x in explain["value"].as_array().unwrap() {
+                                explain_text = explain_text + &x.to_string() + "; ";
+                            }
+                        web_explains = web_explains + &explain_text + "\n";
                     }
-
-                    // let v: Value = serde_json::from_str(data)?
-
-                    // liststore.clear();
-                    // for d in results.iter() {
-                    //     let values: [&dyn ToValue; 1] = [&d];
-                    //     liststore.set(&liststore.append(), &[0], &values);
-                    // }
-                    results_list.list_update_rows(results);
-                    results_list.container.show_all();
                 }
+                results.push(web_explains.to_string());
 
-                let mut web = String::from("Web explains: \n");
-                // if resp["web"][0]["value"].is_array(){
-                //     // println!("basic dictionary = {:#?}", resp["basic"]["explains"].as_array());
-                //     for x in resp["web"][0]["value"].as_array().unwrap() {
-                //         web = web + &x.to_string() + "\n";
-                //         // println!("web x = {:#?}", x);
-                //     }
-                // }
-
-                // results.list_update_rows();
-                // println!("basic = {:?}",basic);
-                label.set_text(&basic);
-                label2.set_text(&web);
-                // webview.load_uri("https://en.jinzhao.wiki/wiki/GNU");
+                // let mut results = Vec::new();
+                if resp["query"]["pages"].is_object(){
+                    let pages = resp["query"]["pages"].as_object().unwrap();
+                    for (key, value) in pages.iter() {
+                        let fullurl = value["fullurl"].to_string();
+                        let title = value["title"].to_string();
+                        let extract = value["extract"].to_string();
+                        let full_text = format!("<a href={}> {}</a> \n {}", fullurl, title, extract);
+                        results.push(full_text);
+                    }
+                }
+                results_list.list_update_rows(results);
+                results_list.container.show_all();
         });
     }
-
 }
 
 impl ResultsList {
